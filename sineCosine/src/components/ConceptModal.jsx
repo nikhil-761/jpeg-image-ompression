@@ -1,6 +1,8 @@
 import { useState } from "react";
 import steps from "../data/steps";
 import guidedTutorContent from "../data/guidedTutorContent";
+import guidedTourSteps from "../data/guidedTourSteps";
+import GuidedTour from "./GuidedTour";
 import { useMatrix } from "../context/MatrixContext";
 import InputImage from "./steps/InputImage";
 import ImageBlocking from "./steps/ImageBlocking";
@@ -14,7 +16,8 @@ import Comparison from "./steps/Comparison";
 function ConceptModal({ onClose }) {
 
 
-const { selectedMatrix, blockCreated, setBlockCreated, selectedBlock, basisGenerated, frequencyMatrix, quantizedMatrix, zigzagArray, encodedRuns, popupMessage, setPopupMessage } = useMatrix();
+const matrixCtx = useMatrix();
+const { selectedMatrix, blockCreated, setBlockCreated, selectedBlock, basisGenerated, frequencyMatrix, quantizedMatrix, zigzagArray, encodedRuns, popupMessage, setPopupMessage } = matrixCtx;
 
 const nextStep = () => {
   if (!started) return;
@@ -79,7 +82,11 @@ const [activeStep, setActiveStep] = useState(1);
 
 const [showGuidedTutor, setShowGuidedTutor] = useState(false);
 
+const [tourMuted, setTourMuted] = useState(false);
+
 const activeTutor = guidedTutorContent.find((item) => item.id === activeStep);
+
+const activeTourSteps = guidedTourSteps[activeStep];
 
 const startSimulation = () => {
   setStarted(true);
@@ -104,7 +111,17 @@ const startSimulation = () => {
   </div>
 )}
 
-{showGuidedTutor && activeTutor && (
+{showGuidedTutor && activeTourSteps && (
+  <GuidedTour
+    steps={activeTourSteps}
+    ctx={matrixCtx}
+    muted={tourMuted}
+    onToggleMute={() => setTourMuted((m) => !m)}
+    onClose={() => setShowGuidedTutor(false)}
+  />
+)}
+
+{showGuidedTutor && !activeTourSteps && activeTutor && (
   <div className="guidedTutorOverlay" onClick={() => setShowGuidedTutor(false)}>
     <div className="guidedTutorBox" onClick={(e) => e.stopPropagation()}>
       <div className="guidedTutorHeader">
@@ -125,7 +142,13 @@ const startSimulation = () => {
 <div className="headerBar">
   <div className="headerTitle">Sine & Cosine Compression Visualizer</div>
   <div className="headerActions">
-    <button className="speakerBtn" title="Read aloud">🔊</button>
+    <button
+      className="speakerBtn"
+      title={tourMuted ? "Unmute narration" : "Mute narration"}
+      onClick={() => setTourMuted((m) => !m)}
+    >
+      {tourMuted ? "🔇" : "🔊"}
+    </button>
     <button className="guidedTutorBtn" onClick={() => setShowGuidedTutor(true)}>GUIDED TUTOR</button>
     <button className="closeHeaderBtn" onClick={() => onClose && onClose()}>CLOSE</button>
   </div>
