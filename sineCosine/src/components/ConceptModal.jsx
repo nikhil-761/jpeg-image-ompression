@@ -57,7 +57,7 @@ const nextStep = () => {
     return;
   }
 
-  if (activeStep === 7 && (!encodedRuns || !encodedRuns.pairs || encodedRuns.pairs.length === 0)) {
+  if (activeStep === 7 && (!encodedRuns || !encodedRuns.done)) {
     setPopupMessage("Please run Run-Length Encoding first before proceeding.");
     return;
   }

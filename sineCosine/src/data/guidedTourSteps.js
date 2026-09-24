@@ -267,38 +267,38 @@ const guidedTourSteps = {
   ],
   7: [
     {
+      title: "The Core Idea",
+      target: ".rleRuleCard",
+      body:
+        "Run-Length Encoding counts how many times a value repeats consecutively and stores it as a (value, count) pair — like this classic example: 1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0 becomes (1,4) (0,4) (1,6) (0,2). This works for ANY repeated value, not just zeros.",
+    },
+    {
       title: "Source Sequence",
       target: ".encSequenceCard",
       body:
-        "This is the same 1-D sequence from the Zig-Zag step. The pink cells are zeros — notice how they cluster toward the end, which is exactly what Run-Length Encoding exploits.",
+        "This is the same 1-D sequence from the Zig-Zag step. The pink cells are zeros — notice how they cluster toward the end, which is exactly what run-length coding exploits.",
     },
     {
       title: "Run the Encoding",
       target: ".encStreamCard",
       waitingTarget: ".encButton",
       body:
-        "The sequence is now compressed into compact (run, value) pairs — each pair means 'skip this many zeros, then place this value' — ending in a single EOB symbol if trailing zeros remain.",
-      waitingBody: "Click 'Start Run-Length Encoding' to compress the sequence into (run, value) pairs.",
+        "The sequence is now compressed into (value, count) pairs — each pair means 'this value repeated this many times in a row'.",
+      waitingBody: "Click 'Start Run-Length Encoding' to compress the sequence into (value, count) pairs.",
       requireAction: true,
-      check: (ctx) => !!(ctx.encodedRuns && ctx.encodedRuns.pairs && ctx.encodedRuns.pairs.length > 0),
-    },
-    {
-      title: "What is EOB?",
-      target: ".eobExplainCard",
-      body:
-        "EOB (End Of Block) is a single symbol that replaces every remaining zero once the last non-zero coefficient has passed — this is the single biggest source of compression in RLE.",
+      check: (ctx) => !!(ctx.encodedRuns && ctx.encodedRuns.done),
     },
     {
       title: "Compression Statistics",
       target: ".compressionSection",
       body:
-        "This compares how many symbols were needed before RLE (always 64) against how many are needed after — fewer symbols after encoding means a smaller file.",
+        "This compares the 64 raw values against the number of runs found — fewer, longer runs mean better compression. Since values rarely repeat except for zeros, most of the saving here comes from the zero runs.",
     },
     {
       title: "Educational Explanation",
       target: ".observationCard",
       body:
-        "This section explains what each (run, value) pair means, and notes that real codecs like JPEG add Huffman or arithmetic entropy coding on top of RLE — RLE removes structural redundancy, entropy coding removes statistical redundancy.",
+        "This section explains that RLE works for any repeated value, always preserves the original data exactly, and only compresses well when there are long repeated runs — which is why real image codecs like JPEG apply it mainly to the zero-heavy tail of quantized coefficients.",
     },
   ],
   8: [
